@@ -1,0 +1,22 @@
+{
+  "name": "phoenixtachyonclient",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/knoxy5467/phoenixTachyonClient.git"
+  },
+  "author": "Michael Knox",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/knoxy5467/phoenixTachyonClient/issues"
+  },
+  "homepage": "https://github.com/knoxy5467/phoenixTachyonClient#readme",
+  "dependencies": {
+    "phoenix": "^1.7.2"
+  }
+}
