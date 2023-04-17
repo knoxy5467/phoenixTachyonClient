@@ -1,5 +1,8 @@
 import { Socket } from "phoenix";
 import { TachyonAuthObject } from "./models/TachyonAuthObject";
+import { Response } from "node-fetch";
+import fetch from "node-fetch";
+
 
 /**
  * this is the Tachyon Client class, work in progress
@@ -11,7 +14,7 @@ import { TachyonAuthObject } from "./models/TachyonAuthObject";
  */
 
 export class TachyonClient {
-    private  socket : Socket;
+    private  socket : Socket | undefined;
     /**
      *
      * @param endpoint takes the server url. e.g "https://server3.beyondallreason.info"
@@ -33,6 +36,7 @@ export class TachyonClient {
                 }});
             }
         }).catch((error) => {
+            console.error(error);
             if(error.message === "Authentication failed") {
                 throw error;
             }
@@ -40,7 +44,6 @@ export class TachyonClient {
                 throw new Error("Some other error occured");
             }
         });
-        this.socket.connect();
     }
     /**
      *
@@ -49,8 +52,8 @@ export class TachyonClient {
      * @param user_password takes the user password
      * @returns
      */
-    private getToken(endpoint:string,user_email: string, user_password): Promise<TachyonAuthObject>{
-        return new Promise((resolve, reject) => {
+    private getToken(endpoint:string,user_email: string, user_password:string): Promise<TachyonAuthObject>{
+        return new Promise<TachyonAuthObject>((resolve, reject) => {
             fetch(`${endpoint}/teiserver/api/request_token`, {
                 method: 'POST',
                 headers: {
@@ -61,16 +64,33 @@ export class TachyonClient {
                     user_password: user_password
                 })
             })
-            .then(response => response.json())
+            .then(response  => (response.json() as Promise<TachyonAuthObject>))
             .then(response => {
-                resolve(response);
+                if(response.result === "success") {
+                    resolve(response);
+                }
+                else{
+                    reject(new Error("Authentication failed"));
+                }
             })
-            .catch(error => {
-                reject(error);
-            });
         });
     }
-    public sendRequest(request: any) {
-        this.socket.push()
+    public connect(){
+        if(this.socket === undefined){
+            throw new Error("Socket is undefined");
+        }
+        this.socket.connect();
+    }
+    public disconnect(){
+        if(this.socket === undefined){
+            throw new Error("Socket is undefined");
+        }
+        this.socket.disconnect();
+    }
+    public isConnected() : boolean{
+        if(this.socket === undefined){
+            throw new Error("Socket is undefined");
+        }
+        return this.socket.isConnected();
     }
 }
